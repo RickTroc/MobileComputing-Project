@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+
+
     public float gravity;
     public Vector2 velocity;
     public float maxAcceleration = 10;
@@ -23,6 +25,8 @@ public class Player : MonoBehaviour
 
 
     public float jumpThreshold = 1;
+
+    public bool isDead = false;
 
     void Start()
     {
@@ -54,6 +58,17 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 pos = transform.position;
+
+        if (isDead)
+        {
+            return;
+        }
+
+        if(pos.y < -20)
+        {
+            isDead = true;
+        }
+
         if (!isGrounded)
         {
             if (isHoldingJump)
@@ -79,15 +94,32 @@ public class Player : MonoBehaviour
                 Ground ground = hit2D.collider.GetComponent<Ground>();  
                 if(ground != null)
                 {
-                    groundHight = ground.groundHeight;
-                    pos.y = groundHight;
-                    velocity.y = 0f;
-                    isGrounded = true;
+                    if(pos.y >= ground.groundHeight) { 
+                        groundHight = ground.groundHeight;
+                        pos.y = groundHight;
+                        velocity.y = 0f;
+                        isGrounded = true;
+                        }
                 }
 
             }
-            Debug.DrawRay(rayOrigin, rayDirection * rayDistance, Color.red); 
+            Debug.DrawRay(rayOrigin, rayDirection * rayDistance, Color.red);
 
+
+
+            Vector2 wallOrigin = new Vector2(pos.x, pos.y);
+            RaycastHit2D wallHit = Physics2D.Raycast(wallOrigin, Vector2.right, velocity.x * Time.fixedDeltaTime);
+            if(wallHit.collider != null)
+            {
+                Ground ground = wallHit.collider.GetComponent<Ground>();
+                if(ground != null)
+                {
+                    if(pos.y < ground.groundHeight)
+                    {
+                        velocity.x = 0;
+                    }
+                }
+            }
 
         }
 
