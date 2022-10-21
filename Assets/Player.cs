@@ -9,9 +9,9 @@ public class Player : MonoBehaviour
 
     public float gravity;
     public Vector2 velocity;
-    public float maxAcceleration = 10;
+    public float maxAcceleration = 7.5f;
     public float maxXvelocity = 100;
-    public float acceleration = 10;
+    public float acceleration = 7.5f;
     public float distance = 0;
 
     public float jumpVelocity = 20;
@@ -27,6 +27,10 @@ public class Player : MonoBehaviour
     public float jumpThreshold = 1;
 
     public bool isDead = false;
+
+    public LayerMask groundLayerMask;
+    public LayerMask obstacleLayerMask;
+
 
     void Start()
     {
@@ -85,20 +89,23 @@ public class Player : MonoBehaviour
 
             }
 
-            Vector2 rayOrigin = new Vector2(pos.x + 0.7f, pos.y);
-            Vector2 rayDirection = Vector2.up;
+            Vector2 rayOrigin = new Vector2(pos.x + 0.7f, pos.y); //trigger del personaggio per la collisione
+            Vector2 rayDirection = Vector2.up; //vettore di posizione
             float rayDistance = velocity.y * Time.fixedDeltaTime;
-            RaycastHit2D hit2D = Physics2D.Raycast(rayOrigin, rayDirection, rayDistance);
+            //il raycast prende come parametri il trigger, il vettore di posizione, la distanza dal terreno e la maskera del layer
+            RaycastHit2D hit2D = Physics2D.Raycast(rayOrigin, rayDirection, rayDistance, groundLayerMask);
             if(hit2D.collider != null)
             {
+                //prendiamo la componente ground...
                 Ground ground = hit2D.collider.GetComponent<Ground>();  
                 if(ground != null)
                 {
+                    //se il personaggio si trova al di sopra del terreno può atterrare
                     if(pos.y >= ground.groundHeight) { 
                         groundHight = ground.groundHeight;
-                        pos.y = groundHight;
-                        velocity.y = 0f;
-                        isGrounded = true;
+                        pos.y = groundHight; //l'altitudine viene reinizializzata al terreno
+                        velocity.y = 0;//la velocità di caduta viene ripristinata
+                        isGrounded = true;//è atterrato
                         }
                 }
 
@@ -106,39 +113,37 @@ public class Player : MonoBehaviour
             Debug.DrawRay(rayOrigin, rayDirection * rayDistance, Color.red);
 
 
-
+            /*FUNZIONE PER SBATTERE SUI MURI*/
             Vector2 wallOrigin = new Vector2(pos.x, pos.y);
-            RaycastHit2D wallHit = Physics2D.Raycast(wallOrigin, Vector2.right, velocity.x * Time.fixedDeltaTime);
+            RaycastHit2D wallHit = Physics2D.Raycast(wallOrigin, Vector2.right, velocity.x * Time.fixedDeltaTime, groundLayerMask);
             if(wallHit.collider != null)
             {
                 Ground ground = wallHit.collider.GetComponent<Ground>();
                 if(ground != null)
                 {
+                    //Se il player si trova al di sotto del terreno calpestabile...
                     if(pos.y < ground.groundHeight)
                     {
-                        velocity.x = 0;
+                        velocity.x = 0;//...si ferma e muore
                     }
                 }
             }
-
         }
 
         distance += velocity.x * Time.fixedDeltaTime;
 
-        if (isGrounded)
+        if (isGrounded)//il player è a terra e continua a giocare.
         {
-
-            float velocityRatio = velocity.x / maxXvelocity;
-            acceleration = maxAcceleration * (1 - velocityRatio);
+            float velocityRatio = velocity.x / maxXvelocity; //rapporto tra velocità attuale e massima
+            acceleration = maxAcceleration * (1 - velocityRatio); 
             maxHoldJumpTime = maxMaxHoldJumpTime * velocityRatio;
 
             velocity.x += acceleration * Time.fixedDeltaTime;
             if(velocity.x >= maxXvelocity)
-            {
                 velocity.x = maxXvelocity;
-            }
+            
 
-
+            //La posizione del trigger è leggermente spostata a sinistra perchè 
             Vector2 rayOrigin = new Vector2(pos.x - 0.7f, pos.y);
             Vector2 rayDirection = Vector2.up;
             float rayDistance = velocity.y * Time.fixedDeltaTime;
@@ -152,8 +157,8 @@ public class Player : MonoBehaviour
         }
 
 
-        Vector2 obsOrigin = new Vector2(pos.x-1, pos.y);
-        RaycastHit2D obsHitX = Physics2D.Raycast(obsOrigin, Vector2.right, velocity.x * Time.fixedDeltaTime);
+        Vector2 obsOrigin = new Vector2(pos.x, pos.y);
+        RaycastHit2D obsHitX = Physics2D.Raycast(obsOrigin, Vector2.right, velocity.x * Time.fixedDeltaTime, obstacleLayerMask);
         if(obsHitX.collider != null)
         {
             Obstacle obstacle = obsHitX.collider.GetComponent<Obstacle>();
@@ -161,12 +166,12 @@ public class Player : MonoBehaviour
             {
                 hitObstacle(obstacle);
             }
-            //Debug.DrawRay(obsOrigin, new Vector2(1, 0), Color.magenta);
+           
         }
         
 
 
-        RaycastHit2D obsHitY = Physics2D.Raycast(obsOrigin, Vector2.up, velocity.y * Time.fixedDeltaTime);
+        RaycastHit2D obsHitY = Physics2D.Raycast(obsOrigin, Vector2.up, velocity.y * Time.fixedDeltaTime, obstacleLayerMask);
         if (obsHitY.collider != null)
         {
             Obstacle obstacle = obsHitY.collider.GetComponent<Obstacle>();
@@ -176,14 +181,13 @@ public class Player : MonoBehaviour
             }
         }
 
-
         transform.position = pos;
     }
 
     void hitObstacle(Obstacle obstacle)
     {
         Destroy(obstacle.gameObject);
-        velocity.x = 0.7f;
+        velocity.x *= 0.6f;
     }
 
 }
