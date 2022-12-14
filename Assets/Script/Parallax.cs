@@ -22,6 +22,10 @@ public class Parallax : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!player.isDead)
+        {
+
+        
         float realVelocity = player.velocity.x / depth;
             if(PauseMenu.isPaused || player.isDead)
                 realVelocity = 0;
@@ -37,5 +41,6 @@ public class Parallax : MonoBehaviour
 
 
         transform.position = pos;
+        }
     }
 }

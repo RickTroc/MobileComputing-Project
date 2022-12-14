@@ -9,7 +9,7 @@ public class Ground : MonoBehaviour
    public float groundHeight;
     public float groundRight;
     public float screenRight;
-    BoxCollider2D collider;
+    BoxCollider2D bCollider;
     
     private int groundAmount = 0;
     
@@ -26,7 +26,7 @@ public class Ground : MonoBehaviour
     {
         player = GameObject.Find("Player").GetComponent<Player>();
 
-        collider = GetComponent<BoxCollider2D>();
+        bCollider = GetComponent<BoxCollider2D>();
         screenRight = Camera.main.transform.position.x * 2;
     }
     void Start()
@@ -37,7 +37,7 @@ public class Ground : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        groundHeight = transform.position.y + (collider.size.y / 2);
+        groundHeight = transform.position.y + (bCollider.size.y / 2);
     }
 
     private void FixedUpdate()
@@ -48,7 +48,7 @@ public class Ground : MonoBehaviour
         pos.x -= player.velocity.x * Time.fixedDeltaTime;
 
 
-        groundRight = transform.position.x + (collider.size.x / 2);
+        groundRight = transform.position.x + (bCollider.size.x / 2);
 
         groundAmount++;
 
@@ -73,7 +73,8 @@ public class Ground : MonoBehaviour
     }
 
     void generateGround()
-    {
+    { 
+
         GameObject go = Instantiate(gameObject);
         BoxCollider2D goCollider = go.GetComponent<BoxCollider2D>();
         Vector2 pos = new Vector2();
@@ -172,7 +173,6 @@ public class Ground : MonoBehaviour
                     fall.obstacles.Add(o);
                 }
             }
-
         }
 
         int speedBoxnum = Random.Range(0, 10);
@@ -198,10 +198,6 @@ public class Ground : MonoBehaviour
             }
         }
     }
-
-       
-
-
-
+    
 }
 

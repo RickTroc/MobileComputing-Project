@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
                 isGrounded = false;
                 velocity.y = jumpVelocity;
                 isHoldingJump = true;
-                holdJumpTimer = 0.0f;
+                holdJumpTimer = 0;
 
                 if(fall != null)
                 {
@@ -74,6 +74,7 @@ public class Player : MonoBehaviour
 
         if (isDead)
         {
+            Time.timeScale = 0f;
             return;
         }
 
@@ -164,6 +165,14 @@ public class Player : MonoBehaviour
             Vector2 rayOrigin = new Vector2(pos.x - 0.7f, pos.y);
             Vector2 rayDirection = Vector2.up;
             float rayDistance = velocity.y * Time.fixedDeltaTime;
+
+            //Perchè muoio quando caso su una piattaforma che cade?
+            //Perchè non avevo scritto questo.
+            if (fall != null)
+            {
+                //Per queste tre linee di codice sono stato scomunicato dalla chiesa cattolica...
+                rayDistance = -fall.fallSpeed * Time.fixedDeltaTime;
+            }
             RaycastHit2D hit2D = Physics2D.Raycast(rayOrigin, rayDirection, rayDistance);
             if (hit2D.collider == null)
             {

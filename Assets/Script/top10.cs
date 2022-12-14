@@ -21,7 +21,7 @@ public class top10 : MonoBehaviour
         
         entry.gameObject.SetActive(false);
         float templateHeight = 41f;
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 5; i++)
         {
             Instantiate(entry,container);
             RectTransform entryRectTransform=entry.GetComponent<RectTransform>();

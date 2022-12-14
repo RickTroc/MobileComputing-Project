@@ -9,6 +9,8 @@ public class GroundFall : MonoBehaviour
 
     public  Player player;  
     public List<Obstacle> obstacles = new List<Obstacle>();
+
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -34,7 +36,6 @@ public class GroundFall : MonoBehaviour
                 player.groundHight -= fallAmount;
                 Vector2 playerPos = player.transform.position;
                 playerPos.y -= fallAmount;
-
                 player.transform.position = playerPos;
             }
 
