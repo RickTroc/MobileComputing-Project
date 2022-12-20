@@ -6,38 +6,52 @@ using UnityEngine;
 public class Boss : MonoBehaviour
 {
     Player player;
-
-    GameObject boss;
+    public Bullet bullet;
+    public float velocity;
+    
 
     private void Awake()
     {
+      
+    }
+    private void Start()
+    {
         player = GameObject.Find("Player").GetComponent<Player>();
-        boss.SetActive(true);
+       if(gameObject.activeSelf)    
+            StartCoroutine(shoot());
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        Vector2 pos = transform.position;
-
-
-        
-        if (player.distance == 100)
-        {
-            boss.SetActive(false);
-        }
-        if (player.distance == 800)
-            boss.SetActive(false);
-
-        transform.position = pos;
-    
 
     }
-
-
-    void shoot()
+    private void FixedUpdate()
     {
+        Vector2 pos = transform.position;
+        //seguo il player
+        if(!player.isDead)
+        {
+            if (player.transform.position.y < pos.y)
+                velocity = -5;
+            if (player.transform.position.y > pos.y)
+                velocity = 5;
+            pos.y += velocity * Time.fixedDeltaTime;
+            transform.position = pos;
+        }
+    }
 
+    IEnumerator shoot()
+    {
+        while(!player.isDead)
+        {
+            GameObject shoot = Instantiate(bullet.gameObject);
+            float y = transform.position.y;
+            float x = transform.position.x;
+            Vector2 shooterPos = new Vector2(x, y);
+            shoot.transform.position = shooterPos;
+            yield return new WaitForSeconds(2);
+        }
     }
 }

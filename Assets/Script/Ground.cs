@@ -18,6 +18,7 @@ public class Ground : MonoBehaviour
 
     public Obstacle boxTemplate;
     public Obstacle flyingEnemy;
+    public Obstacle powerUpBox;
     public Obstacle speedBox;
     public Boss boss;
 
@@ -197,7 +198,26 @@ public class Ground : MonoBehaviour
                 }
             }
         }
+        
+        //power-up box
+        if ((Random.Range(0, 15) == 1 && player.distance>700))
+        {
+            GameObject specialBox = Instantiate(powerUpBox.gameObject);
+            float y = Random.Range(goGround.groundHeight + 3, goGround.groundHeight + maxJumpHeight - 5);
+            float halfWidth = goCollider.size.x / 2 - 1;
+            float left = go.transform.position.x - halfWidth;
+            float right = go.transform.position.x + halfWidth;
+            float x = Random.Range(left, right);
+            Vector2 boxPos = new Vector2(x, y);
+            specialBox.transform.position = boxPos;
+            if (fall != null)
+            {
+                Obstacle o = specialBox.GetComponent<Obstacle>();
+                fall.obstacles.Add(o);
+            }
+        }
     }
+
     
 }
 

@@ -14,6 +14,9 @@ public class UIController : MonoBehaviour
     int[] top10 = new int[10];
     GameObject results;
     Text finalDistanceText;
+    GameObject shield;
+    GameObject teleport;
+    GameObject jump;
 
     private void Awake()
     {
@@ -21,7 +24,10 @@ public class UIController : MonoBehaviour
         distanceText = GameObject.Find("DistanceText").GetComponent<Text>();
         results = GameObject.Find("Results");
         finalDistanceText = GameObject.Find("FinalDistanceText").GetComponent<Text>();
-        
+        shield = GameObject.Find("ShieldText");
+        teleport = GameObject.Find("TeleportText");
+        jump = GameObject.Find("JumpText");
+
 
         results.SetActive(false);
 
@@ -34,7 +40,7 @@ public class UIController : MonoBehaviour
         {
             top10[i] = PlayerPrefs.GetInt("pos" + (i + 1).ToString(), 0);
         }
-        highscoreText.text = "Highscore: \n" + top10[0].ToString();
+      
     }
 
 
@@ -75,6 +81,22 @@ public class UIController : MonoBehaviour
             }
 
         }
+
+        // se il player ha dei power up mostro il rispettivo template
+        if (player.esistePowerUp("jump"))
+            jump.SetActive(true);
+        if (player.esistePowerUp("teleport"))
+            teleport.SetActive(true);
+        if (player.esistePowerUp("shield"))
+            shield.SetActive(true);
+
+        //se non li ha più lo nascondo
+        if (!player.esistePowerUp("shield"))
+            shield.SetActive(false);
+        if (!player.esistePowerUp("teleport"))
+            teleport.SetActive(false);
+        if (!player.esistePowerUp("jump"))
+            jump.SetActive(false);
     }
 
     public void quit()
