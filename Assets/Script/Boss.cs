@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class Boss : MonoBehaviour
 
     private void Awake()
     {
-      
+        eliminaboss();
     }
     private void Start()
     {
@@ -33,9 +34,9 @@ public class Boss : MonoBehaviour
         //seguo il player
         if(!player.isDead)
         {
-            if (player.transform.position.y < pos.y)
+            if (player.transform.position.y < pos.y-5)
                 velocity = -5;
-            if (player.transform.position.y > pos.y)
+            if (player.transform.position.y > pos.y+5)
                 velocity = 5;
             pos.y += velocity * Time.fixedDeltaTime;
             transform.position = pos;
@@ -53,5 +54,13 @@ public class Boss : MonoBehaviour
             shoot.transform.position = shooterPos;
             yield return new WaitForSeconds(2);
         }
+    }
+
+
+
+    async Task eliminaboss()          //despawn del boss
+    {
+        await Task.Delay(7000);
+        Destroy(gameObject);
     }
 }

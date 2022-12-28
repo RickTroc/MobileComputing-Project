@@ -22,6 +22,10 @@ public class Ground : MonoBehaviour
     public Obstacle speedBox;
     public Boss boss;
 
+    //uso static perchè il valore di diff e lastspawn non dipende dalla singola istanza do ground
+    static float diff = 800; //differenza tra player.distance e last spawn, inizializzato ad 800 solo per far spawnare la prima istanza di boss subito dopo i 1500 metri
+    static float lastSpawn = 0;//ultimo spawn del boss (in metri). 
+
 
     private void Awake()
     {
@@ -62,7 +66,7 @@ public class Ground : MonoBehaviour
 
         if (!didGenerateGround )
         {
-            if(groundRight < screenRight )
+            if(groundRight < screenRight && !player.isDead)
             {
                 generateGround();
                 groundAmount++;
@@ -131,7 +135,10 @@ public class Ground : MonoBehaviour
 
         }
 
+/*  spawn degli oggetti
+-------------------------------------------------------------------------------------------------------------------------------*/        
         
+        // box
         int obstacleNum = Random.Range(0, 2);
         for(int i = 0; i<obstacleNum; i++)
         {
@@ -154,6 +161,7 @@ public class Ground : MonoBehaviour
             }
         }
 
+        //bird
         int obsFlyObjNum = Random.Range(0, 3);
         for(int i = 0; i<obsFlyObjNum; i++)
         {
@@ -176,6 +184,7 @@ public class Ground : MonoBehaviour
             }
         }
 
+        //speedbox
         int speedBoxnum = Random.Range(0, 10);
         for (int i = 0; i < obstacleNum; i++)
         {
@@ -200,10 +209,10 @@ public class Ground : MonoBehaviour
         }
         
         //power-up box
-        if ((Random.Range(0, 15) == 1 && player.distance>700))
+        if ((Random.Range(0, 10) == 1 && player.distance>500))
         {
             GameObject specialBox = Instantiate(powerUpBox.gameObject);
-            float y = Random.Range(goGround.groundHeight + 3, goGround.groundHeight + maxJumpHeight - 5);
+            float y = goGround.groundHeight; 
             float halfWidth = goCollider.size.x / 2 - 1;
             float left = go.transform.position.x - halfWidth;
             float right = go.transform.position.x + halfWidth;
@@ -216,6 +225,27 @@ public class Ground : MonoBehaviour
                 fall.obstacles.Add(o);
             }
         }
+
+        //boss
+        if (player.distance>500)
+        {
+            if (diff >= 800) //il boss spawna ogni 800 metri, la distruzione di boss è nella classe 'boss'
+            {
+                GameObject bossI = Instantiate(boss.gameObject);
+                Vector2 bossPos = new Vector2(61.3f, 10.9f);
+                bossI.transform.position = bossPos;
+                lastSpawn = player.distance;
+                diff = player.distance - lastSpawn;
+            }
+            else
+                diff = player.distance - lastSpawn;
+        }
+        else // reinizializzo le variabili statiche
+        {
+            diff = 800;
+            lastSpawn = 0;
+        }
+//----------------------------------------------------------------------------------------------------------------------------------
     }
 
     

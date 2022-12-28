@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -350,7 +351,7 @@ public class Player : MonoBehaviour
             }
         }
     }
-    void aggiungiPowerUp(string nomePowerUp)
+    async void aggiungiPowerUp(string nomePowerUp)
     {
         if (!esistePowerUp(nomePowerUp))
         {
@@ -362,6 +363,8 @@ public class Player : MonoBehaviour
                     i = powerUp.Length;
                 }
             }
+            await Task.Delay(10000);
+            eliminaPowerUp(nomePowerUp);    
         }
     }
 //----------------------------------------------------------------------------------------------------------------------
