@@ -38,9 +38,12 @@ public class Player : MonoBehaviour
     public string[] powerUp = new String[3];
     public bool doubleJumped=false;
 
+    public GlobalLeadUpdate globalLeaderboard;
+    public UIController uIController;
+
     void Start()
     {
-        
+
     }
 
     void Update()
@@ -102,8 +105,7 @@ public class Player : MonoBehaviour
 
         if(pos.y < -20)
         {
-            isDead = true;
-            Destroy(gameObject);    
+            StartCoroutine(playerDeath());
         }
 
         if (!isGrounded)
@@ -248,8 +250,7 @@ public class Player : MonoBehaviour
                 if (!esistePowerUp("shield"))   // se esiste "shield" player non muore  
                 { 
                 velocity.x = 0;
-                Destroy(gameObject);   
-                isDead = true;
+                    StartCoroutine(playerDeath());
                 }
                 eliminaPowerUp("shield"); //se player è sopravvissuto aveva shield e glielo levo
             }
@@ -286,8 +287,7 @@ public class Player : MonoBehaviour
             if (!esistePowerUp("shield"))  // se esiste "shield" player non muore 
             { 
             velocity.x = 0;
-            Destroy(gameObject);
-            isDead = true;
+                StartCoroutine(playerDeath());
             }
             eliminaPowerUp("shield");   //se player è sopravvissuto aveva shield e glielo levo
         }
@@ -369,6 +369,20 @@ public class Player : MonoBehaviour
     }
 //----------------------------------------------------------------------------------------------------------------------
 
+    //morte del player
+    IEnumerator playerDeath()
+    {
+        Time.timeScale = 0f;
+        int distanceInt = (int)distance;
+        yield return globalLeaderboard.SubmitScoreRoutine(distanceInt);
+        Time.timeScale = 1f;
+        velocity.y = 0;
+        isDead = true;
+        Destroy(gameObject);
+        uIController.endMenu();
+        
+    }
+ 
 }
 
 

@@ -18,6 +18,7 @@ public class UIController : MonoBehaviour
     GameObject teleport;
     GameObject jump;
 
+    int distance;
     private void Awake()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
@@ -46,41 +47,8 @@ public class UIController : MonoBehaviour
 
     void Update()
     {
-        int distance = Mathf.FloorToInt(player.distance);
+        distance = Mathf.FloorToInt(player.distance);
         distanceText.text = distance + " m";
-
-        if (player.isDead)
-        {
-            results.SetActive(true);
-            finalDistanceText.text = distance + " m";
-
-            //modifico la top 10 se ho fatto un record
-            if (distance > PlayerPrefs.GetInt("pos10") && !updated)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    if (top10[i] < distance)
-                    {
-                        for (int j = 9; j > i; j--)
-                        {
-                            top10[j] = top10[j - 1];
-                        }
-                        top10[i] = distance;
-                        i = 10;
-                        updated = true;
-                    }
-                }
-                //aggiorno l'highscore
-               
-            }
-
-            //aggiorno i prefs
-            for (int i = 0; i < 10; i++)
-            {
-                PlayerPrefs.SetInt("pos" + (i + 1).ToString(), top10[i]);
-            }
-
-        }
 
         // se il player ha dei power up mostro il rispettivo template
         if (player.esistePowerUp("jump"))
@@ -109,5 +77,36 @@ public class UIController : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
+    public void endMenu()
+    { 
+        
+        results.SetActive(true);
+        finalDistanceText.text = distance + " m";
 
+        //modifico la top 10 se ho fatto un record
+        if (distance > PlayerPrefs.GetInt("pos10") && !updated)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                if (top10[i] < distance)
+                {
+                    for (int j = 9; j > i; j--)
+                    {
+                        top10[j] = top10[j - 1];
+                    }
+                    top10[i] = distance;
+                    i = 10;
+                    updated = true;
+                }
+            }
+            //aggiorno l'highscore
+
+        }
+
+        //aggiorno i prefs
+        for (int i = 0; i < 10; i++)
+        {
+            PlayerPrefs.SetInt("pos" + (i + 1).ToString(), top10[i]);
+        }
+    }
 }

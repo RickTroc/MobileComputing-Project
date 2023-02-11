@@ -232,7 +232,7 @@ public class Ground : MonoBehaviour
             if (diff >= 800) //il boss spawna ogni 800 metri, la distruzione di boss è nella classe 'boss'
             {
                 GameObject bossI = Instantiate(boss.gameObject);
-                Vector2 bossPos = new Vector2(61.3f, 10.9f);
+                Vector2 bossPos = new Vector2(55.3f, 10.9f);
                 bossI.transform.position = bossPos;
                 lastSpawn = player.distance;
                 diff = player.distance - lastSpawn;
