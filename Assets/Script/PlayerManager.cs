@@ -46,11 +46,61 @@ public class PlayerManager : MonoBehaviour
             else
             {
                 Debug.Log("user created successfully");
-      //          LootLockerSDKManager.SetPlayerName(nickname, (response) =>
-      //          {
-      //             if (!response.success)
-      //                 return;
-      //          });
+                LootLockerSDKManager.WhiteLabelLogin(Email.text, Password.text, false, response =>
+                {
+                    if (!response.success)
+                    {
+                        Debug.Log("error while login");
+                        done = true;
+                    }
+                    else
+                    {
+                        Debug.Log("player logged in");
+
+                        LootLockerSDKManager.StartWhiteLabelSession((response) =>
+                        {
+                            if (!response.success)
+                            {
+                                Debug.Log("error starting session");
+                                done = true;
+                            }
+                            else
+                            {
+                                LootLockerSDKManager.SetPlayerName(nickname, (response) => {
+
+                                    if (!response.success)
+                                    {
+                                        Debug.Log("error assigning nickname");
+                                        done = true;
+                                    }
+                                    
+                                else
+                                    {
+                                        Debug.Log("session started succesfully");
+                                        LootLockerSessionRequest sessionRequest = new LootLockerSessionRequest();
+                                        LootLocker.LootLockerAPIManager.EndSession(sessionRequest, (response) =>
+                                        {
+                                            if (!response.success)
+                                            {
+                                                Debug.Log("error ending session");
+                                                done = true;
+                                            }
+                                            else {
+                                                Debug.Log("account created succesfully");
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+
+                        });
+                    }
+                });
+                //          LootLockerSDKManager.SetPlayerName(nickname, (response) =>
+                //          {
+                //             if (!response.success)
+                //                 return;
+                //          });
             }
         });
         yield return new WaitWhile(() => done = false);
