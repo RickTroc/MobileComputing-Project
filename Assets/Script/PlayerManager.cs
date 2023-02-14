@@ -3,17 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using LootLocker.Requests;
 using UnityEngine.UI;
-using UnityEditor.Compilation;
+
 
 public class PlayerManager : MonoBehaviour
 {
     Text Email;
     Text Password;
     Text Nick;
+    Text LogInCompleted;
+    Text SignUpCompleted;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        LogInCompleted = GameObject.Find("LogInCompletedMex(Legacy)").GetComponent<Text>();
+        SignUpCompleted = GameObject.Find("SignUpCompletedMex(Legacy)").GetComponent<Text>();
+        LogInCompleted.gameObject.SetActive(false);
+        SignUpCompleted.gameObject.SetActive(false);
     }
     // Update is called once per frame
     void Update()
@@ -26,7 +31,7 @@ public class PlayerManager : MonoBehaviour
         Email = GameObject.Find("EMail").GetComponent<Text>();
         Password = GameObject.Find("Password").GetComponent<Text>();
         Nick = GameObject.Find("NickName").GetComponent<Text>();
-
+        
         StartCoroutine(SignUpRoutine(Email.text,Password.text,Nick.text));
     }
 
@@ -87,6 +92,7 @@ public class PlayerManager : MonoBehaviour
                                             }
                                             else {
                                                 Debug.Log("account created succesfully");
+                                                SignUpCompleted.gameObject.SetActive(true);
                                             }
                                         });
                                     }
@@ -109,7 +115,7 @@ public class PlayerManager : MonoBehaviour
     {
        Text Email = GameObject.Find("LogInEMail").GetComponent<Text>();
        Text Password = GameObject.Find("LogInPassword").GetComponent<Text>();
-        LootLockerSDKManager.WhiteLabelLogin(Email.text, Password.text, false, response =>
+        LootLockerSDKManager.WhiteLabelLogin(Email.text, Password.text, true, response =>
         {
             if (!response.success)
             {
@@ -130,6 +136,7 @@ public class PlayerManager : MonoBehaviour
             else
             {
                 Debug.Log("session started succesfully");
+                LogInCompleted.gameObject.SetActive(true);
             }
         });
         });        

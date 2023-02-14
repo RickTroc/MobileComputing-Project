@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using LootLocker.Requests;
-using UnityEditor.Compilation;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 

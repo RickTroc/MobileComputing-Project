@@ -5032,7 +5032,7 @@ GameObject:
   - component: {fileID: 1488735374}
   - component: {fileID: 1488735373}
   m_Layer: 5
-  m_Name: CompletedMex(Legacy)
+  m_Name: SignUpCompletedMex(Legacy)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
