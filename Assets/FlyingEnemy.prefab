@@ -126,6 +126,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obsCode: 2
+  spawnPoint: 666
+  spawnRate: 3
+  spawnProb: 5
 --- !u!95 &326358591278588959
 Animator:
   serializedVersion: 4

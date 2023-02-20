@@ -100,6 +100,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obsCode: 3
+  spawnPoint: 350
+  spawnRate: 2
+  spawnProb: 7
 --- !u!61 &8722229510048684286
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 72b61845c401a7b48994fba2777009d8
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - boxTemplate: {instanceID: 0}
+  - flyingEnemy: {instanceID: 0}
+  - powerUpBox: {fileID: -2778714872044959620, guid: a3835c1d4933cef4fb576e22a576c18d, type: 3}
+  - speedBox: {instanceID: 0}
+  - boss: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

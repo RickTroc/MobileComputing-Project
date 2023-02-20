@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
-
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -33,6 +34,9 @@ public class Player : MonoBehaviour
     public LayerMask obstacleLayerMask;
 
     GroundFall fall;
+
+    public string[] powerUp = new String[3];
+    public bool doubleJumped=false;
 
     void Start()
     {
@@ -66,6 +70,24 @@ public class Player : MonoBehaviour
         {
             isHoldingJump = false;
         }
+
+        // codice per il doppio-salto
+        if (!isGrounded && !isHoldingJump)
+        {
+             if (esistePowerUp("jump") && !doubleJumped && PauseMenu.isPaused == false && Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                velocity.y = jumpVelocity;
+                isHoldingJump = true;
+                holdJumpTimer = 0.0f;
+                doubleJumped = true;
+            }
+        }
+        // codice per il teletrasporto
+        if (esistePowerUp("bridge"))
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+                teleport();
+        }
     }
 
     private void FixedUpdate()
@@ -78,7 +100,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        if(pos.y < -20)
+        if(pos.y < -10)
         {
             isDead = true;
             Destroy(gameObject);    
@@ -117,6 +139,7 @@ public class Player : MonoBehaviour
                         pos.y = groundHight; //l'altitudine viene reinizializzata al terreno
                         velocity.y = 0;//la velocità di caduta viene ripristinata
                         isGrounded = true;//è atterrato
+                        doubleJumped = false; //resetta l'eventuale doppio salto
                         }
 
                     fall = ground.GetComponent<GroundFall>();
@@ -126,8 +149,10 @@ public class Player : MonoBehaviour
                     }
 
                 }
-
+                
+                
             }
+
             Debug.DrawRay(rayOrigin, rayDirection * rayDistance, Color.red);
 
 
@@ -146,6 +171,9 @@ public class Player : MonoBehaviour
                     }
                 }
             }
+            
+            
+           
         }
 
         distance += velocity.x * Time.fixedDeltaTime;
@@ -187,61 +215,159 @@ public class Player : MonoBehaviour
         RaycastHit2D obsHitX = Physics2D.Raycast(obsOrigin, Vector2.right, velocity.x * Time.fixedDeltaTime, obstacleLayerMask);
         if(obsHitX.collider != null)
         {
-            Obstacle obstacle = obsHitX.collider.GetComponent<Obstacle>();
-            if(obstacle != null)
-            {
-                hitObstacle(obstacle);
-            }
-           
+            hitObstacle(obsHitX);
         }
-        
 
 
         RaycastHit2D obsHitY = Physics2D.Raycast(obsOrigin, Vector2.up, velocity.y * Time.fixedDeltaTime, obstacleLayerMask);
         if (obsHitY.collider != null)
         {
-            Obstacle obstacle = obsHitY.collider.GetComponent<Obstacle>();
-            if (obstacle != null)
-            {
-                hitObstacle(obstacle);
-                
-            }
+            hitObstacle(obsHitY);
         }
 
         transform.position = pos;
     }
 
-    void hitObstacle(Obstacle obstacle)
+    void hitObstacle(RaycastHit2D obsHit)
     {
-        //box
-        if(obstacle.obsCode == 1)
-        {
-            Destroy(obstacle.gameObject);
-            velocity.x *= 0.6f;
+        // Collisione avvenuta con oggetto di tipo Obstacle
+        Obstacle obstacle = obsHit.collider.GetComponent<Obstacle>();
+        if(obstacle!=null)
+        { 
+            //box
+            if(obstacle.obsCode == 1)
+            {
+                Destroy(obstacle.gameObject);
+                velocity.x *= 0.6f;
 
+            }
+            //bird
+            if (obstacle.obsCode == 2)
+            {
+                Destroy(obstacle.gameObject);
+                if (!esistePowerUp("shield"))   // se esiste "shield" player non muore  
+                { 
+                velocity.x = 0;
+                Destroy(gameObject);   
+                isDead = true;
+                }
+                eliminaPowerUp("shield"); //se player è sopravvissuto aveva shield e glielo levo
+            }
+           
+
+            //speedBox
+            if (obstacle.obsCode == 3)
+            {
+                Destroy(obstacle.gameObject);
+                velocity.x += 10f;
+
+            }
+
+            //power-up
+            if (obstacle.obsCode == 4)
+            {
+                Destroy(obstacle.gameObject);
+                int cod;
+                cod = Random.Range(0, 3);
+                if (cod == 0)
+                    aggiungiPowerUp("shield");
+                if (cod == 1)
+                    aggiungiPowerUp("jump");
+                if (cod == 2)
+                    aggiungiPowerUp("bridge");
+            }
         }
-        //bird
-        if (obstacle.obsCode == 2)
+
+        //collisione avvenuta con Bullet
+        Bullet bullet = obsHit.collider.GetComponent<Bullet>();
+        if(bullet != null)
         {
+            Destroy(bullet.gameObject);
+            if (!esistePowerUp("shield"))  // se esiste "shield" player non muore 
+            { 
             velocity.x = 0;
-            Destroy(gameObject);   
-            Destroy(obstacle.gameObject);
+            Destroy(gameObject);
             isDead = true;
-
+            }
+            eliminaPowerUp("shield");   //se player è sopravvissuto aveva shield e glielo levo
         }
-
-        //speedBox
-        if (obstacle.obsCode == 3)
-        {
-            Destroy(obstacle.gameObject);
-            velocity.x += 10f;
-
-        }
-
-        
-
 
     }
+    /*funzioni utili per la gestione dei power-up
+------------------------------------------------------------------------------------------------------------------*/
+    public void activateShield()
+    {
+        int i = 0;
+        bool done = false;
+        do
+        {
+            if (powerUp[i] == "")
+            {
+                powerUp[i] = "shield";
+                done = true;
+            }
+            i++;
+        }
+        while (i < powerUp.Length && done == false);
+    }
+    public void teleport()
+    {
+        Vector2 position = transform.position;
+        RaycastHit2D obsHitY = Physics2D.Raycast(position, Vector2.down);
+        if (obsHitY.collider != null)
+        {
+            Ground ground = obsHitY.collider.gameObject.GetComponent<Ground>();
+            if (ground != null)
+            {
+                velocity.y = 0;
+                gravity = 0;
+                groundHight = ground.groundHeight;
+                position.y = groundHight + 1;
+                transform.position = position;
+                gravity = -500;
+            }
+        }
+    }
+    
+
+    public bool esistePowerUp(string nomePowerUp)
+    {
+        for (int i = 0; i < powerUp.Length; i++)
+        {
+            if (powerUp[i] == nomePowerUp)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    void eliminaPowerUp(string nomePowerUp)
+    {
+        for (int i = 0; i < powerUp.Length; i++)
+        {
+            if (powerUp[i] == nomePowerUp)
+            {
+                powerUp[i] = "";
+            }
+        }
+    }
+    async void aggiungiPowerUp(string nomePowerUp)
+    {
+        if (!esistePowerUp(nomePowerUp))
+        {
+            for (int i = 0; i < powerUp.Length; i++)
+            {
+                if (powerUp[i] == "")
+                {
+                    powerUp[i] = nomePowerUp;
+                    i = powerUp.Length;
+                }
+            }
+            await Task.Delay(10000);
+            eliminaPowerUp(nomePowerUp);    
+        }
+    }
+//----------------------------------------------------------------------------------------------------------------------
 
 }
 
@@ -260,6 +386,12 @@ bilancire l'accelerazione [FATTO]
 Bosses
 
 Bonus/Malus [Work in progress, lato Anzio]
+
+PONTI TIBETANI: potenziamento che crea ground lineare per un tempo x.
+NB:per fare questo PowerUp cinviene lavorare su GenerateGround nello script Ground
+EDIT: l'altezza di spawn deve essere costante, la distanza tra due blocchi deve essere zero
+
+
 
 Shop(per Skin e Musiche?)
 

@@ -6,18 +6,15 @@ public class Parallax : MonoBehaviour
 {
 
     public float depth = 1;
-
+    public float screenPos;
     Player player;
 
     private void Awake()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
+        screenPos = Camera.main.transform.position.x;
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+   
 
     // Update is called once per frame
     void Update()
@@ -36,11 +33,14 @@ public class Parallax : MonoBehaviour
 
         pos.x -= realVelocity * Time.fixedDeltaTime;
 
-        if(pos.x <= -64.2)
-            pos.x = 191.08f;
+            Debug.Log("centro schermo: " + screenPos + "\ndespawn: " + screenPos + "\nspawn: " + screenPos*3);
+        if(pos.x <= -31)
+            pos.x = 92.5f;
 
-
-        transform.position = pos;
+            /*
+            if(pos.x <= -64.2)
+                pos.x = 191.08f;*/
+            transform.position = pos;
         }
     }
 }
