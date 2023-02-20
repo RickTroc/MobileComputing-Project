@@ -33,7 +33,7 @@ public class Parallax : MonoBehaviour
 
         pos.x -= realVelocity * Time.fixedDeltaTime;
 
-            Debug.Log("centro schermo: " + screenPos + "\ndespawn: " + screenPos + "\nspawn: " + screenPos*3);
+          
         if(pos.x <= -31)
             pos.x = 92.5f;
 

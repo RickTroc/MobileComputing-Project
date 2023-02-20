@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
@@ -37,6 +38,9 @@ public class Player : MonoBehaviour
 
     public string[] powerUp = new String[3];
     public bool doubleJumped=false;
+
+    public GlobalLeadUpdate globalLeaderboard;
+    public UIController uIController;
 
     void Start()
     {
@@ -100,10 +104,9 @@ public class Player : MonoBehaviour
             return;
         }
 
-        if(pos.y < -10)
+        if(pos.y < -20)
         {
-            isDead = true;
-            Destroy(gameObject);    
+            StartCoroutine(playerDeath());
         }
 
         if (!isGrounded)
@@ -248,8 +251,7 @@ public class Player : MonoBehaviour
                 if (!esistePowerUp("shield"))   // se esiste "shield" player non muore  
                 { 
                 velocity.x = 0;
-                Destroy(gameObject);   
-                isDead = true;
+                    StartCoroutine(playerDeath());
                 }
                 eliminaPowerUp("shield"); //se player è sopravvissuto aveva shield e glielo levo
             }
@@ -286,8 +288,7 @@ public class Player : MonoBehaviour
             if (!esistePowerUp("shield"))  // se esiste "shield" player non muore 
             { 
             velocity.x = 0;
-            Destroy(gameObject);
-            isDead = true;
+                StartCoroutine(playerDeath());
             }
             eliminaPowerUp("shield");   //se player è sopravvissuto aveva shield e glielo levo
         }
@@ -367,8 +368,24 @@ public class Player : MonoBehaviour
             eliminaPowerUp(nomePowerUp);    
         }
     }
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 
+    //morte del player
+    IEnumerator playerDeath()
+    {
+        
+        Time.timeScale = 0f;
+        int distanceInt = (int)distance;
+        yield return globalLeaderboard.SubmitScoreRoutine(distanceInt);
+        Time.timeScale = 1f;
+        velocity.y = 0;
+        Destroy(gameObject);
+        isDead = true;
+        uIController.endMenu();
+
+
+
+    }
 }
 
 

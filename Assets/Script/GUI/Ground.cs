@@ -76,7 +76,6 @@ public class Ground : MonoBehaviour
                 if (player.esistePowerUp("bridge"))
                 {
                     PonteTibetano();
-                    Debug.Log("PONTE TUBETANO ATTIVO");
                     groundAmount++;
                     didGenerateGround = true;
 
